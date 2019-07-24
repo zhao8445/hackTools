@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import requests
-import BeautifulSoup
 import sys
 import threading
+from bs4 import BeautifulSoup
 import json
 import Queue
+import bs4
 
-url = ''
+url = 'https://www.lagou.com/'
 headers = {}
 links = set()
 
@@ -15,14 +16,20 @@ class spider(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = queue
 
+    def __init__(self):
+        threading.Thread.__init__(self)
+
     def run(self):
         while not self.queue.empty():
             num = self.queue.get()
             self.exec_spider(num)
 
-    def exec_spider(self,num):
-        r = requests.post(url=url, headers=headers, data={'':''})
-        data = json.loads(r.text)
+    def exec_spider(self):
+        r = requests.get(url=url, headers=headers)
+        soup = BeautifulSoup(r.content)
+        a = soup.find_all('a')
+        for i in range(len(a)):
+            print a[i]
 
     # 判断空链接与不符合条件的结果
     def links_check(self,link):
@@ -76,7 +83,9 @@ def main(self):
     for t in threads:
         t.join()
 if __name__ == '__main__':
-    main()
+    s=spider()
+    s.exec_spider()
+
 
 
 
